@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ᴀʟᴘʜᴀ ʟᴇᴀʀɴɪɴɢ ʟᴜᴍᴇ</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      transition: filter 0.3s ease;
+    }
+    .blurred {
+      filter: blur(6px);
+    }
+
+    /* Loading Spinner */
+    .spinner-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid #ccc;
+      border-top: 6px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.5s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px 25px;
+      border-radius: 12px;
+      width: 320px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      text-align: center;
+      animation: slideIn 0.4s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-content h2 {
+      margin-bottom: 20px;
+      font-size: 22px;
+      color: #333;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    .modal-content button {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      margin-top: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+    .modal-content button:hover {
+      background: #0056b3;
+    }
+
+    .form-box {
+      display: none;
+      animation: fadeInForm 0.4s ease;
+    }
+    .form-box.active {
+      display: block;
+    }
+
+    @keyframes fadeInForm {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .switch-links {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+    .switch-links span {
+      color: #007bff;
+      cursor: pointer;
+      text-decoration: underline;
+      margin: 0 5px;
+    }
+    .message {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 0.9em;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <!-- Target Site -->
+  <iframe src="https://alphalearninglume-d8413.web.app/" id="targetSite"></iframe>
+
+  <!-- Loading Spinner -->
+  <div class="spinner-overlay" id="spinner">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Modal Popup -->
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <h2 id="form-title">Sign In</h2>
+
+      <!-- Signup Form -->
+      <div class="form-box" id="signup-box">
+        <input type="text" id="signup-name" placeholder="Name" />
+        <input type="email" id="signup-email" placeholder="Email" />
+        <input type="password" id="signup-pass" placeholder="Password" />
+        <button onclick="signup()">Sign Up</button>
+      </div>
+
+      <!-- Signin Form -->
+      <div class="form-box active" id="signin-box">
+        <input type="email" id="signin-email" placeholder="Email" />
+        <input type="password" id="signin-pass" placeholder="Password" />
+        <button onclick="signin()">Sign In</button>
+      </div>
+
+      <!-- OTP Form -->
+      <div class="form-box" id="otp-box">
+        <input type="text" id="otp-input" placeholder="Enter OTP" />
+        <button onclick="verifyOtp()">Verify OTP</button>
+      </div>
+
+      <p class="message" id="msg"></p>
+
+      <div class="switch-links">
+        <span onclick="showForm('signin')">Sign In</span> |
+        <span onclick="showForm('signup')">Sign Up</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Show modal after 2 seconds
+    setTimeout(() => {
+      document.getElementById("spinner").style.display = "none";
+      document.getElementById("loginModal").style.display = "flex";
+      document.getElementById("targetSite").classList.add("blurred");
+    }, 2000);
+
+    function showMessage(msg, color = 'red') {
+      const m = document.getElementById("msg");
+      m.textContent = msg;
+      m.style.color = color;
+    }
+
+    function showForm(type) {
+      ['signup-box', 'signin-box', 'otp-box'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
+      });
+
+      if (type === 'signup') {
+        document.getElementById("signup-box").classList.add('active');
+        document.getElementById("form-title").innerText = "Sign Up";
+      } else if (type === 'signin') {
+        document.getElementById("signin-box").classList.add('active');
+        document.getElementById("form-title").innerText = "Sign In";
+      } else if (type === 'otp') {
+        document.getElementById("otp-box").classList.add('active');
+        document.getElementById("form-title").innerText = "Verify OTP";
+      }
+      showMessage("");
+    }
+
+    function signup() {
+      const name = document.getElementById("signup-name").value;
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-pass").value;
+
+      fetch('/signup', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name, email, password})
+      }).then(res => res.json())
+        .then(data => {
+          showMessage(data.message, data.status === 'success' ? 'green' : 'red');
+          if (data.status === 'success') {
+            showForm('signin');
+          }
+        });
+    }
+
+    function signin() {
+      const email = document.getElementById("signin-email").value;
+      const password = document.getElementById("signin-pass").value;
+
+      fetch('/signin', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, password})
+      }).then(res => res.json())
+        .then(data => {
+          if (data.status === 'otp_sent') {
+            showMessage("OTP sent. Check your email.", 'green');
+            showForm('otp');
+          } else {
+            showMessage(data.message, 'red');
+          }
+        });
+    }
+
+    function verifyOtp() {
+      const email = document.getElementById("signin-email").value;
+      const otp = document.getElementById("otp-input").value;
+
+      fetch('/verify-otp', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, otp})
+      }).then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            showMessage(data.message, 'green');
+            document.getElementById("loginModal").style.display = "none";
+            document.getElementById("targetSite").classList.remove("blurred");
+          } else {
+            showMessage(data.message, 'red');
+          }
+        });
+    }
+  </script>
+</body>
+</html>

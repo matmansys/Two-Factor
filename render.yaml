@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: flask-2fa-app
+    env: python
+    buildCommand: ""
+    startCommand: python app.py
+    envVars:
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
